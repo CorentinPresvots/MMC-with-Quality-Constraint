@@ -1,4 +1,4 @@
-# Multiple-Model Coding (MMC) Scheme for Electrical Signal Compression
+# Multiple-Model Coding (MMC) Scheme for Electrical Signal Compression with Quality Constraint
 
 > **Citation:**
 >
@@ -67,7 +67,8 @@ By default, the script uses 12 three-phase voltage signals identified as `85, 91
 ### Key Parameters
 - **Window Size (N):** Each window is by default 128 samples long. This can be modified by changing the `N` value in the script.
 - **Number of Coded Windows (nb_w):** The number of windows to be encoded is set to 50 by default. Adjusting `nb_w` controls how many windows per signal are processed.
-- **Maximum Bit Rate (n_tot):** The total bit rate allocated for encoding each window is set to 128 bits (equivalent to 1 bit/sample) by default. You can modify $n_tot$ to explore different encoding rates.
+- **Quality Constraint (quality):** The encoding quality for each window is defined by a default RMSE of 200 V. You can adjust quality to experiment with different levels of compression performance.
+Available Metrics: Three metrics derived from the L2 norm are implemented: RMSE, MSE, and -SNR.
 
 ### Model Selection
 - The set of models ($\mathcal{M}$) used in the encoding process is initialized in the main code.  
@@ -82,28 +83,30 @@ There are multiple encoding methods available in `main.py`, each offering a diff
 
 1. **Exhaustive Search:**  
 For each $n_{\text{x}}$, the model parameters are quantized, and all residual compression methods are tested until a distortion constraint is met. The best combination of parameter quantization and residual compression is selected. This approach is the most computationally expensive but achieves the best compression performance.
-   - High computational cost (~529×O(Nlog(N))).  
-   - Example: 48.07 dB SNR for the 12 signals at 1 bit/sample.
+   - High computational cost (~100×O(Nlog(N))).  
+   - Example: 92.8 bits/window for the 12 signals with RMSE=200V.
 
 2. **Golden Section Search:**  
 This method assumes convexity in the bit allocation problem and uses the golden section search to iteratively narrow the range of $n_{\text{x}}$. It requires fewer function evaluations than exhaustive search, resulting in faster convergence, though with slightly reduced compression quality.
-   - Mid-level computational complexity (~186×O(Nlog(N))).  
-   - Slightly lower compression performance than exhaustive search, with 47.86 dB SNR at 1 bit/sample.
+   - Mid-level computational complexity (~74.2×O(Nlog(N))).  
+   - Slightly lower compression performance than exhaustive search, 92.6 bits/window for the 12 signals with RMSE=200V.
 
 3. **Sub-optimal Exhaustive Search:**  
 This process starts by selecting $n_{\text{x}}$ values and first determining the best model. For the best model, the best residual compression method is then identified. This simplified exhaustive search evaluates fewer configurations, reducing complexity while maintaining reasonable compression performance.
-   - Reduced complexity (~72×O(Nlog(N))).  
-   - Still offers a decent compression performance of 47.76 dB SNR at 1 bit/sample.
+   - Reduced complexity (~34.5×O(Nlog(N))).  
+   - 91.7 bits/window for the 12 signals with RMSE=200V.
 
 4. **Distortion Model Exhaustive Search:**  
 A distortion model is used to identify a subset of candidate models and bit allocations. An exhaustive search is then performed on this reduced set to find the optimal $n_{\text{x}}$, resulting in significant complexity reduction at a modest cost to compression quality.
-   - Further reduces complexity (~40×O(Nlog(N))).  
-   - Results in 47.70 dB SNR at 1 bit/sample.
+   - Further reduces complexity (~16×O(Nlog(N))).  
+   - 94.6 bits/window for the 12 signals with RMSE=200V.
 
 5. **Distortion Model Golden Section Search:**  
 This approach applies a distortion model to pre-select candidate models and bit allocations, followed by a golden section search to find the optimal $n_{\text{x}}$. It is the least computationally demanding method, trading off some compression performance for speed.
-   - The least complex method (~25×O(Nlog(N))).  
-   - Fastest option, but with the lowest compression performance (47.56 dB SNR at 1 bit/sample).
+   - The least complex method (~10.5×O(Nlog(N))).  
+   - Fastest option, but with the lowest compression performance : 92=6.9 bits/window for the 12 signals with RMSE=200V..
+
+For 4 and 5: You can further reduce the complexity of these approaches by adjusting certain parameters in the code. Specifically, modifying self.delta_M (= 3 ini) (the number of top-performing models retained for rate-distortion model predictions) and self.delta_nx (= 4 ini) (which sets the search interval around the distortion model’s predicted optimal $n_{\text{x}}$) can narrow the search space. By selecting smaller values for these parameters, the code can focus on fewer candidates and narrower intervals, leading to faster computations at the expense of possibly skipping some alternative configurations.
 
 ### Encoding and Decoding
 The main code handles the compression process for each window by:  
