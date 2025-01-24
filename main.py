@@ -50,7 +50,7 @@ fn = 50    # Nominal frequency
 N = 128    # Number of samples per window
 
 # Input parameters
-nb_signal = 12      # Number of signals to encode
+nb_signal = 2      # Number of signals to encode
 nb_phase = 1        # Number of phases (3 for voltage phases, 6 includes currents)
 nb_w = 50           # Number of windows per signal
 
