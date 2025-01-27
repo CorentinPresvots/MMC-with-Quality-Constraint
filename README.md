@@ -82,12 +82,12 @@ By default, the code uses 12 three-phase voltage signals from the [Data_S](https
 
 
 #### For Model Compression
-- The set of models ($\mathcal{M}$) is initialized in the main code. You can exclude certain medels by commenting the coesponding lines in the main code.
+- The set of models ($\mathcal{M}$) is initialized in the main code. You can exclude certain medels by commenting the coesponding lines in the main.
 - It is also possible to add polynomial models of degree 0 to 14, as well as sample predictive models with different orders and values for $\eta$.
 - You can also consider other models by modifying the initialization in the main code, particularly by adjusting the values in $p_{\boldsymbol{\theta}^{m}}$ to reflect different *a-priori* distributions.
 
 #### For Residual Compression Methods
-- The set of residual compression methods ($\mathcal{L}$) are also initialized in the main code. You can exclude certain methods by commenting the corresponding lines in the main code.
+- The set of residual compression methods ($\mathcal{L}$) are also initialized in the main code. You can exclude certain methods by commenting the corresponding lines in the main.
 
 ---
 
