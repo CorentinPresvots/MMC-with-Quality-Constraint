@@ -334,7 +334,7 @@ Visualization of outputs
 for id_signal in range(nb_signal):  
 
     # Define the time vector for visualization
-    t = np.linspace(0, (nb_w) * (N - 1) * (1 / fs), nb_w * N)
+    t = np.linspace(0, (nb_w*N - 1) * (1 / fs), nb_w * N)
     
     # Loop through each phase for visualization
     for phase in range(nb_phase):
